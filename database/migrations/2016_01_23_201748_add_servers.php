@@ -23,7 +23,6 @@ class AddServers extends Migration
             $table->integer('disk')->unsigned();
             $table->integer('io')->unsigned();
             $table->integer('cpu')->unsigned();
-            $table->boolean('free')->default(1);
             $table->tinyInteger('oom_disabled')->unsigned()->default(0);
             $table->string('ip');
             $table->integer('port')->unsigned();

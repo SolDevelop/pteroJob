@@ -23,25 +23,13 @@ class PowerController extends ClientApiController
      * Send a power action to a server.
      */
     public function index(SendPowerRequest $request, Server $server): Response
-    {   
-        // from here to 
-        if ($server->free == 1){
-            $this->repository->setServer($server)->send(
-                $request->input('signal')
-            );
-    
-            Activity::event(strtolower("server:power.{$request->input('signal')}"))->log();
-    
-        }else{
-            $this->repository->setServer($server)->send(
-                $request->input('signal')
-            );
-    
-            Activity::event(strtolower("server:power.{$request->input('signal')}"))->log();
-    
-        }
-        // here
-        
+    {
+        $this->repository->setServer($server)->send(
+            $request->input('signal')
+        );
+
+        Activity::event(strtolower("server:power.{$request->input('signal')}"))->log();
+
         return $this->returnNoContent();
     }
 }

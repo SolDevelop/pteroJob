@@ -172,7 +172,6 @@ class Server extends Model
         'database_limit' => 'present|nullable|integer|min:0',
         'allocation_limit' => 'sometimes|nullable|integer|min:0',
         'backup_limit' => 'present|nullable|integer|min:0',
-        'free' => 'required|boolean',
     ];
 
     /**
@@ -194,7 +193,6 @@ class Server extends Model
         'database_limit' => 'integer',
         'allocation_limit' => 'integer',
         'backup_limit' => 'integer',
-        'free' => 'boolean',
     ];
 
     /**
