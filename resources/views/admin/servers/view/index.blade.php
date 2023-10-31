@@ -30,6 +30,15 @@
                                 <td><code>{{ $server->id }}</code></td>
                             </tr>
                             <tr>
+                                <td>Free?</td>
+                                @if($server->free == null)
+                                <td><code>False</code></td>
+                                @else
+                                <td><code>True</code></td>
+                                @endif
+                                
+                            </tr>
+                            <tr>
                                 <td>External Identifier</td>
                                 @if(is_null($server->external_id))
                                     <td><span class="label label-default">Not Set</span></td>

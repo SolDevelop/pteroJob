@@ -86,6 +86,22 @@
                             </p>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="cpu" class="control-label">Free?</label>
+                        <div>
+                            <div class="radio radio-danger radio-inline">
+                                <input type="radio" id="pFreeEnabled" value="Free" name="free" @if($server->free == null || $server->free == "Free")checked @endif>
+                                <label for="pFreeEnabled">Enabled</label>
+                            </div>
+                            <div class="radio radio-success radio-inline">
+                                <input type="radio" id="pFreeDisabled" value="0" name="free" @if($server->free == 0)checked @endif>
+                                <label for="pFreeDisabled">Disabled</label>
+                            </div>
+                            <p class="text-muted small">
+                                Free Servers will get limited
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

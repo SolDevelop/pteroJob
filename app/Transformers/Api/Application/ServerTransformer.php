@@ -58,6 +58,7 @@ class ServerTransformer extends BaseTransformer
             'name' => $server->name,
             'description' => $server->description,
             'status' => $server->status,
+            'free' => $server->free,
             // This field is deprecated, please use "status".
             'suspended' => $server->isSuspended(),
             'limits' => [

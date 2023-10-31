@@ -78,7 +78,7 @@ class CreateServerController extends Controller
         }
 
         $server = $this->creationService->handle($data);
-
+        
         $this->alert->success(trans('admin/server.alerts.server_created'))->flash();
 
         return new RedirectResponse('/admin/servers/view/' . $server->id);

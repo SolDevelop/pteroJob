@@ -86,7 +86,6 @@ class ServerCreationService
         $server = $this->connection->transaction(function () use ($data, $eggVariableData) {
             // Create the server and assign any additional allocations to it.
             $server = $this->createModel($data);
-
             $this->storeAssignedAllocations($server, $data);
             $this->storeEggVariables($server, $eggVariableData);
 
@@ -151,6 +150,7 @@ class ServerCreationService
             'swap' => Arr::get($data, 'swap'),
             'disk' => Arr::get($data, 'disk'),
             'io' => Arr::get($data, 'io'),
+            'free'=>Arr::get($data, 'free'),
             'cpu' => Arr::get($data, 'cpu'),
             'threads' => Arr::get($data, 'threads'),
             'oom_disabled' => Arr::get($data, 'oom_disabled') ?? true,

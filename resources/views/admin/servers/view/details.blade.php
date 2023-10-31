@@ -30,6 +30,10 @@
                         <p class="text-muted small">Character limits: <code>a-zA-Z0-9_-</code> and <code>[Space]</code>.</p>
                     </div>
                     <div class="form-group">
+                        <label for="free" class="control-label">Free?</label>
+                        <input type="checkbox" id="free" name="free" value="Free" {{ \Pterodactyl\Helpers\Utilities::checked('free', 0) }} />
+                    </div>
+                    <div class="form-group">
                         <label for="external_id" class="control-label">External Identifier</label>
                         <input type="text" name="external_id" value="{{ old('external_id', $server->external_id) }}" class="form-control" />
                         <p class="text-muted small">Leave empty to not assign an external identifier for this server. The external ID should be unique to this server and not be in use by any other servers.</p>

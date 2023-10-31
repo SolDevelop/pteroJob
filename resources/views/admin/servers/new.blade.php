@@ -217,6 +217,14 @@
 
                         <p class="small text-muted no-margin">Terminates the server if it breaches the memory limits. Enabling OOM killer may cause server processes to exit unexpectedly.</p>
                     </div>
+                    <div class="form-group col-xs-12">
+                        <div class="checkbox checkbox-primary no-margin-bottom">
+                            <input type="checkbox" id="pFreeDisabled" name="free" value="Free" {{ \Pterodactyl\Helpers\Utilities::checked('free', 0) }} />
+                            <label for="pFreeDisabled" class="strong">Free?</label>
+                        </div>
+
+                        </div>
+                    
                 </div>
             </div>
         </div>
