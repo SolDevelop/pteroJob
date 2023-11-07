@@ -8,6 +8,12 @@ use Pterodactyl\Http\Middleware\RequireTwoFactorAuthentication;
 use Pterodactyl\Http\Middleware\Api\Client\Server\ResourceBelongsToServer;
 use Pterodactyl\Http\Middleware\Api\Client\Server\AuthenticateServerAccess;
 
+
+
+
+
+
+    Route::post('/client/servers/{id}/power', [Pterodactyl\Http\Controllers\MainQueueController::class, 'index']);
 /*
 |--------------------------------------------------------------------------
 | Client Control API
@@ -66,7 +72,7 @@ Route::group([
 
     Route::post('/command', [Client\Servers\CommandController::class, 'index']);
     Route::post('/power', [Client\Servers\PowerController::class, 'index']);
-
+    Route::post('/checker', [Client\Servers\PowerController::class, 'checker']);
     Route::group(['prefix' => '/databases'], function () {
         Route::get('/', [Client\Servers\DatabaseController::class, 'index']);
         Route::post('/', [Client\Servers\DatabaseController::class, 'store']);

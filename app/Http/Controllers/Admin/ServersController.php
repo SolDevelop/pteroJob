@@ -77,6 +77,7 @@ class ServersController extends Controller
 
         return redirect()->route('admin.servers.view.details', $server->id);
     }
+   
 
     /**
      * Toggles the installation status for a server.

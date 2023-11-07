@@ -3,6 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use Pterodactyl\Http\Controllers\Base;
 use Pterodactyl\Http\Middleware\RequireTwoFactorAuthentication;
+use Pterodactyl\Http\Controllers\Api\Client;
+use Pterodactyl\Http\Middleware\Activity\ServerSubject;
+use Pterodactyl\Http\Middleware\Api\Client\Server\ResourceBelongsToServer;
+use Pterodactyl\Http\Middleware\Api\Client\Server\AuthenticateServerAccess;
+
 
 Route::get('/', [Base\IndexController::class, 'index'])->name('index')->fallback();
 Route::get('/account', [Base\IndexController::class, 'index'])

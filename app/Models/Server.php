@@ -214,7 +214,6 @@ class Server extends Model
     {
         return $this->status === self::STATUS_SUSPENDED;
     }
-
     /**
      * Gets the user who owns the server.
      */

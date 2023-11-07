@@ -14,7 +14,7 @@ class RequireClientApiKey
      */
     public function handle(Request $request, \Closure $next): mixed
     {
-        $token = $request->user()->currentAccessToken();
+        
 
         
         return $next($request);

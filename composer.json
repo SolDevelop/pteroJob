@@ -51,6 +51,7 @@
         "symfony/mailgun-mailer": "~6.0",
         "symfony/postmark-mailer": "~6.0",
         "symfony/yaml": "~5.4",
+        "textalk/websocket": "^1.6",
         "webmozart/assert": "~1.11"
     },
     "require-dev": {
