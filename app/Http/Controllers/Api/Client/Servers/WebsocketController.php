@@ -70,4 +70,21 @@ class WebsocketController extends ClientApiController
             ],
         ]);
     }
+    public function internal(Server $server){
+        $user = auth()->user();
+        $node = $server->node;
+        $permissions = $this->permissionsService->handle($server, $user);
+        $token = $this->jwtService
+            ->setExpiresAt(CarbonImmutable::now()->addMinutes(10))
+            ->setUser($user)
+            ->setClaims([
+                'server_uuid' => $server->uuid,
+                'permissions' => $permissions,
+            ])
+            ->handle($node, $user->id . $server->uuid);
+
+        $socket = str_replace(['https://', 'http://'], ['wss://', 'ws://'], $node->getConnectionAddress());
+
+        return ['data' => ['token' => $token->toString(),'socket' => $socket . sprintf('/api/servers/%s/ws', $server->uuid),],];
+    }
 }

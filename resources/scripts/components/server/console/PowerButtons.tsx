@@ -4,29 +4,62 @@ import Can from '@/components/elements/Can';
 import { ServerContext } from '@/state/server';
 import { PowerAction } from '@/components/server/console/ServerConsoleContainer';
 import { Dialog } from '@/components/elements/dialog';
+import axios, { AxiosError } from 'axios';
 
 interface PowerButtonProps {
     className?: string;
 }
 
+async function gettter(action: any) {
+    const currentURL = window.location.href;
+
+    // Find the last forward slash in the URL
+    const lastSlashIndex = currentURL.lastIndexOf('/');
+
+    // Extract everything after the last forward slash
+    const serverID = currentURL.substring(lastSlashIndex + 1);
+    const url = `http://localhost/api/client/servers/${serverID}/queue`;
+    const token = 'ptla_PxiseR8eU1IahdQkrcppl4pyYJnHEhmBKeHS5EYOUZ5';
+
+    const data = {
+        input: action,
+    };
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    };
+
+    try {
+        await axios.post(url, data, config);
+        return 200;
+    } catch (error: any) {
+        return error.response.status;
+    }
+}
 export default ({ className }: PowerButtonProps) => {
     const [open, setOpen] = useState(false);
+    const [waiting, setWaiting] = useState(false);
     const status = ServerContext.useStoreState((state) => state.status.value);
     const instance = ServerContext.useStoreState((state) => state.socket.instance);
 
     const killable = status === 'stopping';
-    const onButtonClick = (
+    const onButtonClick = async (
         action: PowerAction | 'kill-confirmed',
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-    ): void => {
+    ): Promise<void> => {
         e.preventDefault();
         if (action === 'kill') {
             return setOpen(true);
         }
-
         if (instance) {
             setOpen(false);
-            instance.send('set state', action === 'kill-confirmed' ? 'kill' : action);
+            const v = gettter(action);
+            if (await v == 401){
+                setWaiting(true)
+            }
         }
     };
 
@@ -47,6 +80,16 @@ export default ({ className }: PowerButtonProps) => {
                 onConfirmed={onButtonClick.bind(this, 'kill-confirmed')}
             >
                 Forcibly stopping a server can lead to data corruption.
+            </Dialog.Confirm>
+            <Dialog.Confirm
+                open={waiting}
+                hideCloseIcon
+                onClose={() => setWaiting(false)}
+                title={'Queue'}
+                confirm={'Retry'}
+                onConfirmed={onButtonClick.bind(this, 'start')}
+            >
+                You're on Queue, Please wait until there is a slot. You can Retry by clicking the button
             </Dialog.Confirm>
             <Can action={'control.start'}>
                 <Button

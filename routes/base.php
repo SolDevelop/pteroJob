@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Pterodactyl\Http\Controllers\Base;
+use Pterodactyl\Http\Controllers\MainQueueController;
 use Pterodactyl\Http\Middleware\RequireTwoFactorAuthentication;
 use Pterodactyl\Http\Controllers\Api\Client;
 use Pterodactyl\Http\Middleware\Activity\ServerSubject;
