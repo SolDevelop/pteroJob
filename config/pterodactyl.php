@@ -81,6 +81,7 @@ return [
         'connect_timeout' => env('GUZZLE_CONNECT_TIMEOUT', 5),
     ],
 
+    'freeram' => env('FREERAM', 2000),
     /*
     |--------------------------------------------------------------------------
     | CDN

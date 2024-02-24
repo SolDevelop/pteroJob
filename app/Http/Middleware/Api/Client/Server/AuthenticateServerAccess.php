@@ -15,6 +15,8 @@ class AuthenticateServerAccess
      */
     protected array $except = [
         'api:client:server.ws',
+        'api:client:server.queue',
+        'api:client:server.checker',
     ];
 
     /**

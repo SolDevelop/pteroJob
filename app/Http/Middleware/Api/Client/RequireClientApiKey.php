@@ -8,6 +8,11 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class RequireClientApiKey
 {
+    protected array $except = [
+        'api:client:server.queue',
+        'api:client:server.checker',
+    ];
+
     /**
      * Blocks a request to the Client API endpoints if the user is providing an API token
      * that was created for the application API.

@@ -3,11 +3,13 @@ import {
     faClock,
     faCloudDownloadAlt,
     faCloudUploadAlt,
+    faGripLinesVertical,
     faHdd,
     faMemory,
     faMicrochip,
     faWifi,
 } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 import { bytesToString, ip, mbToBytes } from '@/lib/formatters';
 import { ServerContext } from '@/state/server';
 import { SocketEvent, SocketRequest } from '@/components/server/events';
@@ -61,8 +63,42 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
 
         return !match ? 'n/a' : `${match.alias || ip(match.ip)}:${match.port}`;
     });
+    const [isQueuePositionRequestDone, setQueuePositionRequestDone] = useState(false);
+    const [QueuePos, setQueuePos] = useState(0);
 
+  
     useEffect(() => {
+        const getQueuePosition = async () => {
+            try {
+
+    const currentURL = window.location.href;
+    const lastSlashIndex = currentURL.lastIndexOf('/');
+    const serverID = currentURL.substring(lastSlashIndex + 1);
+              const token = 'ptla_PxiseR8eU1IahdQkrcppl4pyYJnHEhmBKeHS5EYOUZ5';
+              const config = {
+                  headers: {
+                      Authorization: `Bearer ${token}`,
+                      'Content-Type': 'application/json',
+                  },
+              };
+          
+              const response = await axios.post(`http://localhost/api/client/servers/${serverID}/queue`, {pos:"request"},config);
+              if (response.status === 200) {
+                if (response.data['pos'] === null){
+
+                setQueuePos(0);
+                setQueuePositionRequestDone(true);
+                }else{
+
+                setQueuePos(response.data['pos']);
+                setQueuePositionRequestDone(true);
+                }
+              }
+            } catch (error) {
+              console.error('Error fetching queue position:', error);
+            }
+          };
+          getQueuePosition();
         if (!connected || !instance) {
             return;
         }
@@ -106,6 +142,16 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
                     capitalize(status)
                 )}
             </StatBlock>
+            {isQueuePositionRequestDone && (
+                <StatBlock icon={faGripLinesVertical} title={'Queue position'} color={getBackgroundColor(0, 0)}>
+                    {QueuePos}
+                </StatBlock>
+            )}
+            {!isQueuePositionRequestDone && (
+                <StatBlock icon={faGripLinesVertical} title={'Queue position'} color={getBackgroundColor(0, 0)}>
+                    Loading
+                </StatBlock>
+            )}
             <StatBlock icon={faMicrochip} title={'CPU Load'} color={getBackgroundColor(stats.cpu, limits.cpu)}>
                 {status === 'offline' ? (
                     <span className={'text-gray-400'}>Offline</span>

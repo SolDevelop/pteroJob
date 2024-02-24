@@ -81,6 +81,10 @@ class Kernel extends HttpKernel
             SubstituteBindings::class,
             DaemonAuthenticate::class,
         ],
+        'queue' => [
+        SubstituteClientBindings::class,
+        RequireClientApiKey::class,
+        ],
     ];
 
     /**

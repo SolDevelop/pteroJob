@@ -5,12 +5,11 @@ use Pterodactyl\Http\Controllers\Api\Client;
 use Pterodactyl\Http\Controllers\MainQueueController;
 use Pterodactyl\Http\Middleware\Activity\ServerSubject;
 use Pterodactyl\Http\Middleware\Activity\AccountSubject;
+use Pterodactyl\Http\Middleware\Activity\TrackAPIKey;
 use Pterodactyl\Http\Middleware\RequireTwoFactorAuthentication;
 use Pterodactyl\Http\Middleware\Api\Client\Server\ResourceBelongsToServer;
 use Pterodactyl\Http\Middleware\Api\Client\Server\AuthenticateServerAccess;
-
-
-
+use Pterodactyl\Http\Middleware\EnsureStatefulRequests;
 
 
 /*
@@ -56,6 +55,9 @@ Route::prefix('/account')->middleware(AccountSubject::class)->group(function () 
 | Endpoint: /api/client/servers/{server}
 |
 */
+
+
+
 Route::group([
     'prefix' => '/servers/{server}',
     'middleware' => [
@@ -68,7 +70,6 @@ Route::group([
     Route::get('/websocket', Client\Servers\WebsocketController::class)->name('api:client:server.ws');
     Route::get('/resources', Client\Servers\ResourceUtilizationController::class)->name('api:client:server.resources');
     Route::get('/activity', Client\Servers\ActivityLogController::class)->name('api:client:server.activity');
-
     Route::post('/command', [Client\Servers\CommandController::class, 'index']);
     Route::post('/power', [Client\Servers\PowerController::class, 'index']);
     Route::post('/queue', [MainQueueController::class, 'index']);

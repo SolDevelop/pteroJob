@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Encryption\EncryptException;
 use Pterodactyl\Contracts\Repository\SettingsRepositoryInterface;
 
 class SettingsServiceProvider extends ServiceProvider
@@ -24,6 +25,7 @@ class SettingsServiceProvider extends ServiceProvider
         'recaptcha:website_key',
         'pterodactyl:guzzle:timeout',
         'pterodactyl:guzzle:connect_timeout',
+        'pterodactyl:freeram',
         'pterodactyl:console:count',
         'pterodactyl:console:frequency',
         'pterodactyl:auth:2fa_required',
@@ -101,7 +103,6 @@ class SettingsServiceProvider extends ServiceProvider
                 case '(null)':
                     $value = null;
             }
-
             $config->set(str_replace(':', '.', $key), $value);
         }
     }

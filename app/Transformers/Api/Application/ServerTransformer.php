@@ -24,6 +24,7 @@ class ServerTransformer extends BaseTransformer
         'egg',
         'variables',
         'location',
+        'free',
         'node',
         'databases',
         'transfer',

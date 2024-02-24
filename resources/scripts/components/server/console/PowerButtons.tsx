@@ -4,7 +4,7 @@ import Can from '@/components/elements/Can';
 import { ServerContext } from '@/state/server';
 import { PowerAction } from '@/components/server/console/ServerConsoleContainer';
 import { Dialog } from '@/components/elements/dialog';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 interface PowerButtonProps {
     className?: string;
@@ -39,12 +39,51 @@ async function gettter(action: any) {
         return error.response.status;
     }
 }
+async function starter() {
+    const currentURL = window.location.href;
+
+    // Find the last forward slash in the URL
+    const lastSlashIndex = currentURL.lastIndexOf('/');
+
+    // Extract everything after the last forward slash
+    const serverID = currentURL.substring(lastSlashIndex + 1);
+    const url = `http://localhost/api/client/servers/${serverID}/queue`;
+    const token = 'ptla_PxiseR8eU1IahdQkrcppl4pyYJnHEhmBKeHS5EYOUZ5';
+
+    const data = {
+        input: 'start',
+    };
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    };
+
+    try {
+        await axios.post(url, data, config);
+        return 200;
+    } catch (error: any) {
+        return error.response.status;
+    }
+}
 export default ({ className }: PowerButtonProps) => {
     const [open, setOpen] = useState(false);
     const [waiting, setWaiting] = useState(false);
     const status = ServerContext.useStoreState((state) => state.status.value);
     const instance = ServerContext.useStoreState((state) => state.socket.instance);
-
+    let intervalId: NodeJS.Timeout;
+    const runner = async () => {
+        // Your task logic goes here
+        const v = await starter();
+        if (v === 200) {
+            setWaiting(false);
+            clearInterval(intervalId);
+        } else {
+            console.warn('Retrying');
+        }
+    };
     const killable = status === 'stopping';
     const onButtonClick = async (
         action: PowerAction | 'kill-confirmed',
@@ -56,9 +95,13 @@ export default ({ className }: PowerButtonProps) => {
         }
         if (instance) {
             setOpen(false);
-            const v = gettter(action);
-            if (await v == 401){
-                setWaiting(true)
+            const v = await gettter(action);
+            if (v === 401) {
+                setWaiting(true);
+                intervalId = setInterval(runner, 60000);
+            }
+            if (waiting === true) {
+                setWaiting(false);
             }
         }
     };
@@ -81,16 +124,9 @@ export default ({ className }: PowerButtonProps) => {
             >
                 Forcibly stopping a server can lead to data corruption.
             </Dialog.Confirm>
-            <Dialog.Confirm
-                open={waiting}
-                hideCloseIcon
-                onClose={() => setWaiting(false)}
-                title={'Queue'}
-                confirm={'Retry'}
-                onConfirmed={onButtonClick.bind(this, 'start')}
-            >
-                You're on Queue, Please wait until there is a slot. You can Retry by clicking the button
-            </Dialog.Confirm>
+            <Dialog.Queue open={waiting} hideCloseIcon={true} onClose={() => setWaiting(false)} title={'Queue'}>
+                You are on a Queue, Please wait until there is a slot. Please Wait, you can close this page
+            </Dialog.Queue>
             <Can action={'control.start'}>
                 <Button
                     className={'flex-1'}

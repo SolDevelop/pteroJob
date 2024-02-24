@@ -3,8 +3,11 @@ import DialogFooter from './DialogFooter';
 import DialogIcon from './DialogIcon';
 import ConfirmationDialog from './ConfirmationDialog';
 
+import QueueDialog from './QueueDialog';
+
 const Dialog = Object.assign(DialogComponent, {
     Confirm: ConfirmationDialog,
+    Queue: QueueDialog,
     Footer: DialogFooter,
     Icon: DialogIcon,
 });

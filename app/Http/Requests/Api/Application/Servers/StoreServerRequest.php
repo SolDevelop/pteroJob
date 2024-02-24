@@ -33,7 +33,7 @@ class StoreServerRequest extends ApplicationApiRequest
             'environment' => 'present|array',
             'skip_scripts' => 'sometimes|boolean',
             'oom_disabled' => 'sometimes|boolean',
-
+            
             // Resource limitations
             'limits' => 'required|array',
             'limits.memory' => $rules['memory'],
@@ -79,6 +79,8 @@ class StoreServerRequest extends ApplicationApiRequest
             'owner_id' => array_get($data, 'user'),
             'egg_id' => array_get($data, 'egg'),
             'image' => array_get($data, 'docker_image'),
+
+            'free' => array_get($data, 'free'),
             'startup' => array_get($data, 'startup'),
             'environment' => array_get($data, 'environment'),
             'memory' => array_get($data, 'limits.memory'),

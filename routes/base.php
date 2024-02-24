@@ -10,6 +10,8 @@ use Pterodactyl\Http\Middleware\Api\Client\Server\ResourceBelongsToServer;
 use Pterodactyl\Http\Middleware\Api\Client\Server\AuthenticateServerAccess;
 
 
+include_once 'queue.php';
+
 Route::get('/', [Base\IndexController::class, 'index'])->name('index')->fallback();
 Route::get('/account', [Base\IndexController::class, 'index'])
     ->withoutMiddleware(RequireTwoFactorAuthentication::class)
@@ -20,4 +22,4 @@ Route::get('/locales/locale.json', Base\LocaleController::class)
     ->where('namespace', '.*');
 
 Route::get('/{react}', [Base\IndexController::class, 'index'])
-    ->where('react', '^(?!(\/)?(api|auth|admin|daemon)).+');
+    ->where('react', '^(?!(\/)?(api|auth|admin|daemon|acid|servers)).+');

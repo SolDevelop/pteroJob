@@ -9,6 +9,11 @@ use Pterodactyl\Http\Requests\Api\Client\ClientApiRequest;
 
 class StoreApiKeyRequest extends ClientApiRequest
 {
+    protected array $except = [
+        'api:client:server.queue',
+        'api:client:server.checker',
+    ];
+
     public function rules(): array
     {
         $rules = ApiKey::getRules();

@@ -14,6 +14,12 @@ class ClientApiRequest extends ApplicationApiRequest
     /**
      * Determine if the current user is authorized to perform the requested action against the API.
      */
+    protected array $except = [
+        'api:client:server.queue',
+
+        'api:client:server.checker',
+    ];
+
     public function authorize(): bool
     {
         if ($this instanceof ClientPermissionsRequest || method_exists($this, 'permission')) {

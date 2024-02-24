@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 use Pterodactyl\Http\Controllers\Api\Application\ApplicationApiController;
 use Pterodactyl\Http\Controllers\Api\Client\Servers\WebsocketController;
 use Pterodactyl\Models\Server;
+use Pterodactyl\Models\Ticket;
 use Pterodactyl\Services\Nodes\NodeJWTService;
 use Pterodactyl\Services\Servers\GetUserPermissionsService;
 use WebSocket\Client;
@@ -43,6 +44,7 @@ class MainQueueController extends ApplicationApiController
     {
 
         $data = $this->getWebSocketData($server['uuidShort'])['data'];
+        
         $token = $data['token'];
         $socket = $data['socket'];
 
@@ -217,80 +219,189 @@ class MainQueueController extends ApplicationApiController
     }
     public function index(Request $request, Server $server)
     {
-        $uuidshort = $server->uuidShort;
-        if ($request->only(['input'])) {
-            $data = $request->only(['input']);
-            if ($data['input'] == 'start') {
-                $node = $server->node;
-                $requesteduuid = $server->uuid;
-                $requestedmemory = $server->memory;
-                $fullservers = $node->servers;
-                $arr = [
-                    'Node' => $node->uuid,
-                    'Max-Memory' => $node->memory,
-                    'Servers' => []
-                ];
-                foreach ($fullservers as $server) {
-                    if ($server->free == "Free") {
-                        if ($server->uuid == $requesteduuid) {
-                            continue;
-                        }
-                        $arr['Servers'][] = ["memory" => $server->memory, "status" => $this->checkIfUp($server), "Uuid" => $server->uuid, "UuidShort" => $server->uuidShort];
-                    }
+        if ($request->all()['pos']){
+            $uuidshort = $server->uuidShort;
+        $uuid = $server->uuid;
+        $ticket = Ticket::where('uuidShort', $uuidshort)->first();
+        if ($ticket){
+        return response(["pos"=> $ticket->turn], 200);
+        }else{
 
-                }
-                $max = $arr['Max-Memory'];
-                $current = 0;
-                foreach ($arr['Servers'] as $server) {
-                    if ($server['status'] == true) {
-                        $current += $server['memory'];
-                    }
-                }
-                $fuller = $current + $requestedmemory;
-                $checker = $max - $fuller;
-                //return response($arr);
-                $time_start = microtime(true);
-$endtime = $time_start + 20;
-                while (($max - $fuller) < 0 || $endtime > microtime(true)) {
-                    $serversArray = $arr["Servers"];
-                    $randomServer = $serversArray[array_rand($serversArray)];
-                    if ($this->checkIfUp(Server::where('uuidShort', $randomServer['UuidShort'])->first()) == true) {
-                        
-                        if ($this->getPlayers($randomServer['UuidShort']) == 0) {
-                            
-                            $returner = $this->killServer($randomServer['UuidShort']);
-                            
-                            if ($returner) {
-                                $fuller -= $randomServer['memory'];
-                            }
-                            
-                        } else {
-                            continue;
-                        }
-                    }
-                }
-                if (($max - $fuller) >= 0){
-
-                $this->WakeUp($uuidshort);
-
-                                }else{
-                                    return response(['status' => ['code' => 'noslots', 'message' => 'There is no place for your server please try again in a minute']], 401);
-                                }
-            } else if ($data['input'] == 'restart') {
-                if ($this->checkIfUp($uuidshort)) {
-
-                    $this->Restart($uuidshort);
-                } else {
-                    $this->WakeUp($uuidshort);
-                }
-            } else if ($data['input'] == 'stop') {
-                $this->stopServer($uuidshort);
-            } else if ($data['input'] == 'kill') {
-                $this->killServer($uuidshort);
-            }
-            return response(['status' => ['code' => 'sucess', 'message' => 'Done']], 200);
-        } else {
-            return response(['status' => ['code' => 'missing', 'message' => 'Some of the Request\'s Data is missing, Try Again']], 404);
+        return response(["pos"=> 0], 200);
         }
+        }else{
+            if ($request->all()['input']) {
+                $uuidshort = $server->uuidShort;
+            $uuid = $server->uuid;
+            $tickets = Ticket::all();
+            $tickets = $tickets->sortByDesc('turn');
+            if ($tickets){
+                foreach ($tickets as $ticket){
+                    $serv = Server::where('uuidShort', $ticket->uuidShort)->first();
+                    $node = $serv->node;
+                    $requesteduuid = $serv->uuid;
+                    $requestedmemory = $serv->memory;
+                    $fullservers = $node->servers;
+                    $arr = [
+                        'Node' => $node->uuid,
+                        'Max-Memory' => config('pterodactyl.freeram'),
+                        'Servers' => []
+                    ];
+                    foreach ($fullservers as $sep) {
+                        if ($sep->free == "Free") {
+                            if ($sep->uuid == $requesteduuid) {
+                                continue;
+                            }
+                            $arr['Servers'][] = ["memory" => $sep->memory, "status" => $this->checkIfUp($sep), "Uuid" => $sep->uuid, "UuidShort" => $sep->uuidShort];
+                        }
+    
+                    }
+                    $max = $arr['Max-Memory'];
+                    $current = 0;
+                    foreach ($arr['Servers'] as $sep) {
+                        if ($server['status'] == true) {
+                            $current += $sep['memory'];
+                        }
+                    }
+                    $fuller = $current + $requestedmemory;
+                    $checker = $max - $fuller;
+                    if (($max - $fuller) > 0){
+                        $this->WakeUp($ticket->uuidShort);
+                    $checker = $this->checkIfUp(Server::where('uuidShort', $ticket->uuidShort)->first());
+                    if ($checker){
+                        $ticket->delete();
+                    }
+                    }
+                    
+                }
+            }
+                $data = $request->all()['input'];
+                if ($data['input'] == 'start') {
+                    $node = $server->node;
+                    $requesteduuid = $server->uuid;
+                    $requestedmemory = $server->memory;
+                    $fullservers = $node->servers;
+                    $arr = [
+                        'Node' => $node->uuid,
+                        'Max-Memory' => $node->memory,
+                        'Servers' => []
+                    ];
+                    foreach ($fullservers as $server) {
+                        if ($server->free == "Free") {
+                            if ($server->uuid == $requesteduuid) {
+                                continue;
+                            }
+                            $arr['Servers'][] = ["memory" => $server->memory, "status" => $this->checkIfUp($server), "Uuid" => $server->uuid, "UuidShort" => $server->uuidShort];
+                        }
+    
+                    }
+                    $max = $arr['Max-Memory'];
+                    $current = 0;
+                    foreach ($arr['Servers'] as $server) {
+                        if ($server['status'] == true) {
+                            $current += $server['memory'];
+                        }
+                    }
+                    $fuller = $current + $requestedmemory;
+                    $checker = $max - $fuller;
+                    //return response($arr);
+                    $time_start = microtime(true);
+    $endtime = $time_start + 20;
+    $counter = 0;
+                    
+                    $servers = $arr['Servers'];
+    
+    // Shuffle the array
+    shuffle($servers);
+    
+    // Iterate through the shuffled array
+    foreach ($servers as $server) {
+        if (($max - $fuller) >= 0){
+            break;
+        }
+                        if ($this->checkIfUp(Server::where('uuidShort', $server['UuidShort'])->first()) == true) {
+                            
+                            if ($this->getPlayers($server['UuidShort']) == 0) {
+                             
+                                $returner = $this->killServer($server['UuidShort']);
+                                
+                                if ($returner) {
+                                    $fuller -= $server['memory'];
+                                }
+                                
+                            }else{
+                               continue;
+                            }
+                        }
+                        $counter += 1;
     }
+                    /*while (($max - $fuller) < 0 || $endtime > microtime(true) || count($arr['Servers']) !== $counter) {
+                        $serversArray = $arr["Servers"];
+                        $randomServer = $serversArray[array_rand($serversArray)];
+                        if ($this->checkIfUp(Server::where('uuidShort', $randomServer['UuidShort'])->first()) == true) {
+                            
+                            if ($this->getPlayers($randomServer['UuidShort']) == 0) {
+                             
+                                $returner = $this->killServer($randomServer['UuidShort']);
+                                
+                                if ($returner) {
+                                    $fuller -= $randomServer['memory'];
+                                }
+                                
+                            }else{
+                                return response($this->getPlayers($randomServer['UuidShort']));
+                            }
+                        }
+                        $counter += 1;
+                    }*/
+                    if (($max - $fuller) >= 0){
+                        $ticket = Ticket::where('uuidShort', $uuidshort)->first();
+                        $this->WakeUp($uuidshort);
+                        if ($ticket){
+                            $checker = $this->checkIfUp(Server::where('uuidShort', $ticket->uuidShort)->first());
+                    if ($checker){
+                        $ticket->delete();
+                    }else{
+                        return response(['status' => ['code' => 'noslots', 'message' => 'There is no place for your server please try again in a minute']], 401);
+                    }
+                        }
+                    
+    
+                                    }else{
+                                        $ticket = Ticket::where('uuidShort', $uuidshort)->first();
+                                        if ($ticket){
+                                            return response(['status' => ['code' => 'noslots', 'message' => 'There is no place for your server please try again in a minute']], 401);
+                                   
+                                        }else{
+                                            $ticket = new Ticket();
+                                        $ticket->uuid = $uuid;
+                                        $ticket->uuidShort= $uuidshort;
+                                        $ticket->node = $node;
+                                        $ticket->turn = Ticket::count() + 1;
+                                        $ticket->save();
+                                        return response(['status' => ['code' => 'noslots', 'message' => 'There is no place for your server please try again in a minute, Your Position has been saved']], 401);
+                                   
+                                        }
+                                        
+                                         }
+                } else if ($data['input'] == 'restart') {
+                    if ($this->checkIfUp(Server::where('uuidShort', $uuidshort)->first())) {
+    
+                        $this->Restart($uuidshort);
+                    } else {
+                        return response(['status'=>['code'=> 'usestart', 'message'=> 'Cannot do a restart without having the server up']], 401);
+                    }
+                } else if ($data['input'] == 'stop') {
+                    $this->stopServer($uuidshort);
+                } else if ($data['input'] == 'kill') {
+                    $this->killServer($uuidshort);
+                }
+                return response(['status' => ['code' => 'sucess', 'message' => 'Done']], 200);
+            } else {
+                return response(['status' => ['code' => 'missing', 'message' => 'Some of the Request\'s Data is missing, Try Again']], 400);
+            }
+        }
+        
+    }
+    
 }

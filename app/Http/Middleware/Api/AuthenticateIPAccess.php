@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AuthenticateIPAccess
 {
+    
     /**
      * Determine if a request IP has permission to access the API.
      *
