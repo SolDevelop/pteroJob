@@ -548,3 +548,4 @@
 1711718783-2041-1709908808,1711718783.2007,GET,/api/application/servers/,"Pterodactyl\Http\Controllers\Api\Application\Servers\ServerController@index",200,40.528059005737,request
 1712119138-9450-720037718,1712119138.8536,GET,/api/remote/servers?page=0&per_page=50,"Pterodactyl\Http\Controllers\Api\Remote\Servers\ServerDetailsController@list",200,255.63406944275,request
 1712119139-1345-2141549171,1712119139.1299,POST,/api/remote/servers/reset,"Pterodactyl\Http\Controllers\Api\Remote\Servers\ServerDetailsController@resetState",204,16.499996185303,request
+1712112094-1902-1458183019,1712112094.1832,GET,/admin/users/accounts.json?user_id=1,"Pterodactyl\Http\Controllers\Admin\UserController@json",200,63.70997428894,request
