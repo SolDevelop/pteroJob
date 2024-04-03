@@ -18,16 +18,22 @@ async function gettter(action: any) {
 
     // Extract everything after the last forward slash
     const serverID = currentURL.substring(lastSlashIndex + 1);
-    const url = `http://localhost/api/client/servers/${serverID}/queue`;
-    const token = 'ptla_PxiseR8eU1IahdQkrcppl4pyYJnHEhmBKeHS5EYOUZ5';
+    const url = `http://localhost/acid/servers/${serverID}/queue`;
+    //const token = 'ptla_PxiseR8eU1IahdQkrcppl4pyYJnHEhmBKeHS5EYOUZ5';
 
     const data = {
         input: action,
     };
 
-    const config = {
+   /* const config = {
         headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    };*/
+
+    const config = {
+        headers: {
             'Content-Type': 'application/json',
         },
     };
@@ -47,16 +53,22 @@ async function starter() {
 
     // Extract everything after the last forward slash
     const serverID = currentURL.substring(lastSlashIndex + 1);
-    const url = `http://localhost/api/client/servers/${serverID}/queue`;
-    const token = 'ptla_PxiseR8eU1IahdQkrcppl4pyYJnHEhmBKeHS5EYOUZ5';
+    const url = `http://localhost/acid/servers/${serverID}/queue`;
+    //const token = 'ptla_PxiseR8eU1IahdQkrcppl4pyYJnHEhmBKeHS5EYOUZ5';
 
     const data = {
         input: 'start',
     };
 
-    const config = {
+    /*const config = {
         headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    };*/
+
+const config = {
+        headers: {
             'Content-Type': 'application/json',
         },
     };

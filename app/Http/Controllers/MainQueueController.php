@@ -219,7 +219,7 @@ class MainQueueController extends ApplicationApiController
     }
     public function index(Request $request, Server $server)
     {
-        if ($request->all()['pos']){
+        if (isset($request->all()['pos'])){
             $uuidshort = $server->uuidShort;
         $uuid = $server->uuid;
         $ticket = Ticket::where('uuidShort', $uuidshort)->first();
@@ -275,7 +275,7 @@ class MainQueueController extends ApplicationApiController
                     
                 }
             }
-                $data = $request->all()['input'];
+                $data = $request->all();
                 if ($data['input'] == 'start') {
                     $node = $server->node;
                     $requesteduuid = $server->uuid;

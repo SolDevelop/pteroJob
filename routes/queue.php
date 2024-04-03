@@ -9,16 +9,22 @@ use Pterodactyl\Http\Middleware\Api\Client\Server\ResourceBelongsToServer;
 use Pterodactyl\Http\Middleware\Api\Client\Server\AuthenticateServerAccess;
 use Pterodactyl\Http\Middleware\EnsureStatefulRequests;
 
-
-Route::group([
-    'prefix' => '/servers/{server}',
-    'middleware' => [
+Route::post('/servers/{server}/queue', [MainQueueController::class, 'index'])
+    ->name('server.queue')
+    ->middleware([
         ServerSubject::class,
         AuthenticateServerAccess::class,
         ResourceBelongsToServer::class,
-    ],
-], function () {
-    
-Route::post('/queue', [MainQueueController::class, 'index'])->name('api:client:server.queue')->withoutMiddleware([TrackAPIKey::class])->withoutMiddleware([EnsureStatefulRequests::class])->withoutMiddleware([EnsureStatefulRequests::class]);
-Route::post('/checker', [Client\Servers\PowerController::class, 'checker'])->name('api:client:server.checker');
-});
+        TrackAPIKey::class, // Added TrackAPIKey middleware
+        EnsureStatefulRequests::class // Added EnsureStatefulRequests middleware
+    ]);
+
+Route::post('/servers/{server}/checker', [Client\Servers\PowerController::class, 'checker'])
+    ->name('server.checker')
+    ->middleware([
+        ServerSubject::class,
+        AuthenticateServerAccess::class,
+        ResourceBelongsToServer::class,
+        EnsureStatefulRequests::class // Added EnsureStatefulRequests middleware
+    ]);
+//2035dddf

@@ -72,8 +72,8 @@ Route::group([
     Route::get('/activity', Client\Servers\ActivityLogController::class)->name('api:client:server.activity');
     Route::post('/command', [Client\Servers\CommandController::class, 'index']);
     Route::post('/power', [Client\Servers\PowerController::class, 'index']);
-    Route::post('/queue', [MainQueueController::class, 'index']);
-    Route::post('/checker', [Client\Servers\PowerController::class, 'checker']);
+    //Route::post('/queue', [MainQueueController::class, 'index']);
+    //Route::post('/checker', [Client\Servers\PowerController::class, 'checker']);
     Route::group(['prefix' => '/databases'], function () {
         Route::get('/', [Client\Servers\DatabaseController::class, 'index']);
         Route::post('/', [Client\Servers\DatabaseController::class, 'store']);
